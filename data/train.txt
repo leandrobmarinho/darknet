@@ -716,7 +716,6 @@ data/img/open_night_235.jpg
 data/img/open_night_236.jpg
 data/img/open_night_237.jpg
 data/img/open_night_238.jpg
-data/img/open_night_275.jpg
 data/img/open_night_276.jpg
 data/img/open_night_277.jpg
 data/img/open_night_278.jpg
