@@ -466,7 +466,6 @@ data/img/2121-8_895.jpg
 data/img/2121-8_90.jpg
 data/img/2121-8_903.jpg
 data/img/2121-8_904.jpg
-data/img/2121-8_905.jpg
 data/img/2121-8_91.jpg
 data/img/2121-8_941.jpg
 data/img/2121-8_968.jpg
