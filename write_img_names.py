@@ -1,4 +1,4 @@
-import argparse, glob, os, numpy as np
+import argparse, glob, os, numpy as np, math
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--path", type=str, help="images path to write in the file")
@@ -18,9 +18,7 @@ if args.path:
 		ptrain = args.ptrain
 
 
-	if files:
-		print("Num train: \t{}\nNum test: \t{}".format(int(len(files)*ptrain), len(files) - int(len(files)*(ptrain))))
-		
+	if files:		
 		file_train = open("train.txt","w")
 		file_test = open("test.txt","w")		
 		
@@ -28,10 +26,10 @@ if args.path:
 		for filename in files:
 			filename = "data/img/{}".format(os.path.basename(filename))
 			if args.verbose:
-				type_file = ("train" if cont <= int(len(files)*ptrain) else "test")
+				type_file = ("train" if cont <= math.ceil(len(files)*ptrain) else "test")
 				print("writing in {}.txt '{}'".format(type_file, filename))
 
-			if cont <= int(len(files)*ptrain):
+			if cont <= math.ceil(len(files)*ptrain):
 				file_train.write("{}\n".format(filename))
 			else:
 				file_test.write("{}\n".format(filename))
@@ -40,7 +38,7 @@ if args.path:
 
 		file_train.close()
 		file_test.close()
-		print("done")
 
+		print("Num train: \t{}\nNum test: \t{}".format(int(math.ceil(len(files)*ptrain)), int(len(files) - math.ceil(len(files)*(ptrain)))))
 	else:
 		print("No images")
