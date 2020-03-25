@@ -191,7 +191,7 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
 
 			sprintf(buff, "%s/%s_%d.weights", backup_directory, base, i);
 			save_weights(net, buff);
-
+      
       sprintf(th_buff, "python scripts/uploadDriver.py -f %s", buff);
       printf("%s\n",th_buff);
       system(th_buff);
