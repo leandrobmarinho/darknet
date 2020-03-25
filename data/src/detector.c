@@ -187,14 +187,8 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
 			if (ngpus != 1) sync_nets(nets, ngpus, 0);
 #endif
 			char buff[256];
-      char th_buff[256];
-
 			sprintf(buff, "%s/%s_%d.weights", backup_directory, base, i);
 			save_weights(net, buff);
-
-      sprintf(th_buff, "python scripts/uploadDriver.py -f %s", buff);
-      printf("%s\n",th_buff);
-      system(th_buff);
 		}
         free_data(train);
     }
@@ -549,7 +543,7 @@ void validate_detector_map(char *datacfg, char *cfgfile, char *weightfile, float
 		list *plist_dif = get_paths(difficult_valid_images);
 		paths_dif = (char **)list_to_array(plist_dif);
 	}
-
+	
 
 	layer l = net.layers[net.n - 1];
 	int classes = l.classes;
@@ -647,7 +641,7 @@ void validate_detector_map(char *datacfg, char *cfgfile, char *weightfile, float
 				find_replace(labelpath_dif, "JPEGImages", "labels", labelpath_dif);
 				find_replace(labelpath_dif, ".jpg", ".txt", labelpath_dif);
 				find_replace(labelpath_dif, ".JPEG", ".txt", labelpath_dif);
-				find_replace(labelpath_dif, ".png", ".txt", labelpath_dif);
+				find_replace(labelpath_dif, ".png", ".txt", labelpath_dif);				
 				truth_dif = read_boxes(labelpath_dif, &num_labels_dif);
 			}
 
@@ -673,7 +667,7 @@ void validate_detector_map(char *datacfg, char *cfgfile, char *weightfile, float
 						for (j = 0; j < num_labels; ++j)
 						{
 							box t = { truth[j].x, truth[j].y, truth[j].w, truth[j].h };
-							//printf(" IoU = %f, prob = %f, class_id = %d, truth[j].id = %d \n",
+							//printf(" IoU = %f, prob = %f, class_id = %d, truth[j].id = %d \n", 
 							//	box_iou(dets[i].bbox, t), prob, class_id, truth[j].id);
 							float current_iou = box_iou(dets[i].bbox, t);
 							if (current_iou > iou_thresh && class_id == truth[j].id) {
@@ -719,7 +713,7 @@ void validate_detector_map(char *datacfg, char *cfgfile, char *weightfile, float
 					}
 				}
 			}
-
+			
 			unique_truth_count += num_labels;
 
 			free_detections(dets, nboxes);
@@ -732,10 +726,10 @@ void validate_detector_map(char *datacfg, char *cfgfile, char *weightfile, float
 	if((tp_for_thresh + fp_for_thresh) > 0)
 		avg_iou = avg_iou / (tp_for_thresh + fp_for_thresh);
 
-
+	
 	// SORT(detections)
 	qsort(detections, detections_count, sizeof(box_prob), detections_comparator);
-
+	
 	typedef struct {
 		double precision;
 		double recall;
@@ -768,7 +762,7 @@ void validate_detector_map(char *datacfg, char *cfgfile, char *weightfile, float
 		box_prob d = detections[rank];
 		// if (detected && isn't detected before)
 		if (d.truth_flag == 1) {
-			if (truth_flags[d.unique_truth_index] == 0)
+			if (truth_flags[d.unique_truth_index] == 0) 
 			{
 				truth_flags[d.unique_truth_index] = 1;
 				pr[d.class_id][rank].tp++;	// true-positive
@@ -778,7 +772,7 @@ void validate_detector_map(char *datacfg, char *cfgfile, char *weightfile, float
 			pr[d.class_id][rank].fp++;	// false-positive
 		}
 
-		for (i = 0; i < classes; ++i)
+		for (i = 0; i < classes; ++i) 
 		{
 			const int tp = pr[i][rank].tp;
 			const int fp = pr[i][rank].fp;
@@ -794,8 +788,8 @@ void validate_detector_map(char *datacfg, char *cfgfile, char *weightfile, float
 	}
 
 	free(truth_flags);
-
-
+	
+	
 	double mean_average_precision = 0;
 
 	for (i = 0; i < classes; ++i) {
@@ -820,14 +814,14 @@ void validate_detector_map(char *datacfg, char *cfgfile, char *weightfile, float
 		printf("class_id = %d, name = %s, \t ap = %2.2f %% \n", i, names[i], avg_precision*100);
 		mean_average_precision += avg_precision;
 	}
-
+	
 	const float cur_precision = (float)tp_for_thresh / ((float)tp_for_thresh + (float)fp_for_thresh);
 	const float cur_recall = (float)tp_for_thresh / ((float)tp_for_thresh + (float)(unique_truth_count - tp_for_thresh));
 	const float f1_score = 2.F * cur_precision * cur_recall / (cur_precision + cur_recall);
 	printf(" for thresh = %1.2f, precision = %1.2f, recall = %1.2f, F1-score = %1.2f \n",
 		thresh_calc_avg_iou, cur_precision, cur_recall, f1_score);
 
-	printf(" for thresh = %0.2f, TP = %d, FP = %d, FN = %d, average IoU = %2.2f %% \n",
+	printf(" for thresh = %0.2f, TP = %d, FP = %d, FN = %d, average IoU = %2.2f %% \n", 
 		thresh_calc_avg_iou, tp_for_thresh, fp_for_thresh, unique_truth_count - tp_for_thresh, avg_iou * 100);
 
 	mean_average_precision = mean_average_precision / classes;
@@ -925,11 +919,11 @@ void calc_anchors(char *datacfg, int num_of_clusters, int width, int height, int
 		KMEANS_USE_INITIAL_LABELS = 1,
 		KMEANS_PP_CENTERS = 2
 	};
-
+	
 	printf("\n calculating k-means++ ...");
 	// Should be used: distance(box, centroid) = 1 - IoU(box, centroid)
-	cvKMeans2(points, num_of_clusters, labels,
-		cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 10000, 0), attemps,
+	cvKMeans2(points, num_of_clusters, labels, 
+		cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 10000, 0), attemps, 
 		0, KMEANS_PP_CENTERS,
 		centers, &compactness);
 
@@ -950,7 +944,7 @@ void calc_anchors(char *datacfg, int num_of_clusters, int width, int height, int
 	// ours: anchors = 9.3813,6.0095, 3.3999,5.3505, 10.9476,11.1992, 5.0161,9.8314, 1.5003,2.1595
 	//float orig_anch[] = { 9.3813,6.0095, 3.3999,5.3505, 10.9476,11.1992, 5.0161,9.8314, 1.5003,2.1595 };
 	//for (i = 0; i < num_of_clusters * 2; ++i) centers->data.fl[i] = orig_anch[i];
-
+	
 	//for (i = 0; i < number_of_boxes; ++i)
 	//	printf("%2.2f,%2.2f, ", points->data.fl[i * 2], points->data.fl[i * 2 + 1]);
 
@@ -958,7 +952,7 @@ void calc_anchors(char *datacfg, int num_of_clusters, int width, int height, int
 	for (i = 0; i < number_of_boxes; ++i) {
 		float box_w = points->data.fl[i * 2];
 		float box_h = points->data.fl[i * 2 + 1];
-		//int cluster_idx = labels->data.i[i];
+		//int cluster_idx = labels->data.i[i];		
 		int cluster_idx = 0;
 		float min_dist = FLT_MAX;
 		for (j = 0; j < num_of_clusters; ++j) {
@@ -969,7 +963,7 @@ void calc_anchors(char *datacfg, int num_of_clusters, int width, int height, int
 			float distance = sqrt(w_diff*w_diff + h_diff*h_diff);
 			if (distance < min_dist) min_dist = distance, cluster_idx = j;
 		}
-
+		
 		float anchor_w = centers->data.fl[cluster_idx * 2];
 		float anchor_h = centers->data.fl[cluster_idx * 2 + 1];
 		float min_w = (box_w < anchor_w) ? box_w : anchor_w;
