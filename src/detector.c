@@ -187,14 +187,13 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
 			if (ngpus != 1) sync_nets(nets, ngpus, 0);
 #endif
 			char buff[256];
-      char th_buff[256] = "tr < output.txt -d '\000' > output2.txt; grep '00:' output2.txt | sed 's/[avg loss|rate|seconds|images]//g' | sed 's/[, :]/\ /g' | sort --field-separator=' ' --key=3 | head -10";
+      // char th_buff[256] = "tr < output.txt -d '\\000' > output2.txt; grep '00:' output2.txt | sed 's/[avg loss|rate|seconds|images]//g' | sed 's/[, :]/\ /g' | sort --field-separator=' ' --key=3 | head -10";
 
 			sprintf(buff, "%s/%s_%d.weights", backup_directory, base, i);
 			save_weights(net, buff);
 
-
-      printf("%s\n",th_buff);
-      system(th_buff);
+      // printf("%s\n",th_buff);
+      // system(th_buff);
 
       // sprintf(th_buff, "python scripts/uploadDriver.py -f '%s'", buff);
 		}
